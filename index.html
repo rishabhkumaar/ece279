@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>ESP IoT Dashboard</title>
+
+  <!-- Supabase JS -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: #fff;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .card {
+      background: #222;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 12px;
+      width: 250px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .value {
+      font-size: 32px;
+      margin-top: 10px;
+      color: #00ffcc;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<h1>IoT Sensor Dashboard</h1>
+
+<div class="container">
+  <div class="card">
+    <h2>MQ135 Gas</h2>
+    <div id="mq" class="value">--</div>
+  </div>
+
+  <div class="card">
+    <h2>Temperature</h2>
+    <div id="temp" class="value">-- °C</div>
+  </div>
+
+  <div class="card">
+    <h2>Humidity</h2>
+    <div id="hum" class="value">-- %</div>
+  </div>
+</div>
+
+<script>
+  // 🔑 Your Supabase credentials
+  const supabase = window.supabase.createClient(
+    "https://eyfhlcmdhpewovrbixdh.supabase.co",
+    "sb_publishable_JXV4aeRf6k51VyrfMPwNvA_SqibyY3n"
+  );
+
+  async function loadData() {
+    const { data, error } = await supabase
+      .from("sensor_data")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.log("Error:", error);
+      return;
+    }
+
+    if (data && data.length > 0) {
+      const row = data[0];
+
+      document.getElementById("mq").innerText = row.mq135;
+      document.getElementById("temp").innerText = row.temperature + " °C";
+      document.getElementById("hum").innerText = row.humidity + " %";
+    }
+  }
+
+  // Load every 3 seconds
+  setInterval(loadData, 3000);
+  loadData();
+</script>
+
+</body>
+</html>
