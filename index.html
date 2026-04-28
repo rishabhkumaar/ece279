@@ -2,11 +2,7 @@
 
 <html>
 <head>
-  <title>ESP Pro Dashboard</title>
-
-  <!-- Supabase -->
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <title>ESP Dashboard</title>
 
   <!-- Chart.js -->
 
@@ -20,41 +16,23 @@
       text-align: center;
     }
 
-    h1 {
-      margin: 20px;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
     .card {
       background: #1e293b;
       padding: 20px;
       margin: 15px;
       border-radius: 12px;
-      width: 250px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      display: inline-block;
+      width: 220px;
     }
 
     .value {
-      font-size: 34px;
+      font-size: 32px;
       color: #22c55e;
     }
 
     canvas {
       max-width: 90%;
-      margin: 20px auto;
-    }
-
-    .alert {
-      background: red;
-      padding: 10px;
-      margin: 10px;
-      display: none;
-      font-weight: bold;
+      margin-top: 20px;
     }
   </style>
 
@@ -64,36 +42,29 @@
 
 <h1>🔥 IoT Sensor Dashboard</h1>
 
-<div id="alertBox" class="alert">⚠️ GAS LEVEL HIGH!</div>
-
-<div class="container">
-  <div class="card">
-    <h2>MQ135</h2>
-    <div id="mq" class="value">--</div>
-  </div>
-
-  <div class="card">
-    <h2>Temperature</h2>
-    <div id="temp" class="value">-- °C</div>
-  </div>
-
-  <div class="card">
-    <h2>Humidity</h2>
-    <div id="hum" class="value">-- %</div>
-  </div>
+<div class="card">
+  <h2>MQ135</h2>
+  <div id="mq" class="value">--</div>
 </div>
 
-<h2>📊 Live Charts</h2>
+<div class="card">
+  <h2>Temperature</h2>
+  <div id="temp" class="value">-- °C</div>
+</div>
+
+<div class="card">
+  <h2>Humidity</h2>
+  <div id="hum" class="value">-- %</div>
+</div>
+
+<h2>📊 Charts</h2>
 
 <canvas id="tempChart"></canvas> <canvas id="humChart"></canvas>
 
 <script>
-const supabase = window.supabase.createClient(
-  "https://eyfhlcmdhpewovrbixdh.supabase.co",
-  "sb_publishable_JXV4aeRf6k51VyrfMPwNvA_SqibyY3n"
-);
+const URL = "https://eyfhlcmdhpewovrbixdh.supabase.co/rest/v1/sensor_data?select=*&order=created_at.desc&limit=20";
+const API_KEY = "sb_publishable_JXV4aeRf6k51VyrfMPwNvA_SqibyY3n";
 
-// Charts
 let tempChart = new Chart(document.getElementById("tempChart"), {
   type: 'line',
   data: { labels: [], datasets: [{ label: 'Temp °C', data: [] }] }
@@ -104,15 +75,16 @@ let humChart = new Chart(document.getElementById("humChart"), {
   data: { labels: [], datasets: [{ label: 'Humidity %', data: [] }] }
 });
 
-// Load latest 20 records
 async function loadData() {
-  const { data } = await supabase
-    .from("sensor_data")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(20);
+  const res = await fetch(URL, {
+    headers: {
+      apikey: API_KEY
+    }
+  });
 
-  if (!data) return;
+  const data = await res.json();
+
+  if (!data.length) return;
 
   data.reverse();
 
@@ -128,19 +100,10 @@ async function loadData() {
 
   let latest = data[data.length - 1];
 
-  // Update UI
   document.getElementById("mq").innerText = latest.mq135;
   document.getElementById("temp").innerText = latest.temperature + " °C";
   document.getElementById("hum").innerText = latest.humidity + " %";
 
-  // Alert system
-  if (latest.mq135 > 200) {
-    document.getElementById("alertBox").style.display = "block";
-  } else {
-    document.getElementById("alertBox").style.display = "none";
-  }
-
-  // Update charts
   tempChart.data.labels = labels;
   tempChart.data.datasets[0].data = temps;
   tempChart.update();
@@ -150,20 +113,8 @@ async function loadData() {
   humChart.update();
 }
 
-// 🔴 REAL-TIME (no refresh)
-supabase
-  .channel('realtime')
-  .on(
-    'postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'sensor_data' },
-    payload => {
-      console.log("New Data:", payload.new);
-      loadData();
-    }
-  )
-  .subscribe();
-
-// Initial load
+// refresh every 3 sec
+setInterval(loadData, 3000);
 loadData();
 </script>
 
