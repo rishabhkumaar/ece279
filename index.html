@@ -1,122 +1,231 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-  <title>ESP Dashboard</title>
-
-  <!-- Chart.js -->
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body {
-      font-family: Arial;
-      background: #0f172a;
-      color: #fff;
-      text-align: center;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      margin: 15px;
-      border-radius: 12px;
-      display: inline-block;
-      width: 220px;
-    }
-
-    .value {
-      font-size: 32px;
-      color: #22c55e;
-    }
-
-    canvas {
-      max-width: 90%;
-      margin-top: 20px;
-    }
-  </style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EnviroSense — Live Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
+<body class="min-h-screen">
 
-<body>
+  <!-- Ambient background layers -->
+  <div class="bg-grid"></div>
+  <div class="scan-line"></div>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
 
-<h1>🔥 IoT Sensor Dashboard</h1>
+  <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+  <header class="relative z-10 border-b border-cyan-900/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
 
-<div class="card">
-  <h2>MQ135</h2>
-  <div id="mq" class="value">--</div>
-</div>
+      <div class="flex items-center gap-3">
+        <div class="logo-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <circle cx="18" cy="18" r="10" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>
+            <circle cx="18" cy="18" r="3" fill="#00d4ff"/>
+            <line x1="18" y1="1" x2="18" y2="8" stroke="#00d4ff" stroke-width="1.5"/>
+            <line x1="18" y1="28" x2="18" y2="35" stroke="#00d4ff" stroke-width="1.5"/>
+            <line x1="1" y1="18" x2="8" y2="18" stroke="#00d4ff" stroke-width="1.5"/>
+            <line x1="28" y1="18" x2="35" y2="18" stroke="#00d4ff" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-orbitron text-xl font-bold text-cyan-300 tracking-widest">ENVIROSENSE</h1>
+          <p class="text-xs text-cyan-700 tracking-widest font-mono">ESP8266 · ENVIRONMENTAL MONITOR</p>
+        </div>
+      </div>
 
-<div class="card">
-  <h2>Temperature</h2>
-  <div id="temp" class="value">-- °C</div>
-</div>
+      <!-- Nav links -->
+      <nav class="flex items-center gap-6">
+        <a href="index.html" class="nav-link active font-mono text-sm">DASHBOARD</a>
+        <a href="logs.html" class="nav-link font-mono text-sm">DATA LOGS</a>
+      </nav>
 
-<div class="card">
-  <h2>Humidity</h2>
-  <div id="hum" class="value">-- %</div>
-</div>
+      <!-- Status pill -->
+      <div class="flex items-center gap-4">
+        <div id="device-status" class="status-pill status-checking">
+          <span class="status-dot"></span>
+          <span class="status-label font-mono text-xs">CHECKING…</span>
+        </div>
+        <div class="text-right hidden sm:block">
+          <p class="text-xs text-cyan-700 font-mono">LAST UPDATE</p>
+          <p id="last-update-time" class="text-xs text-cyan-400 font-mono">—</p>
+        </div>
+      </div>
 
-<h2>📊 Charts</h2>
+    </div>
+  </header>
 
-<canvas id="tempChart"></canvas> <canvas id="humChart"></canvas>
+  <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+  <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
-<script>
-const URL = "https://eyfhlcmdhpewovrbixdh.supabase.co/rest/v1/sensor_data?select=*&order=created_at.desc&limit=20";
-const API_KEY = "sb_publishable_JXV4aeRf6k51VyrfMPwNvA_SqibyY3n";
+    <!-- ALERT BANNER -->
+    <div id="alert-banner" class="alert-banner hidden" role="alert">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+        <span class="font-mono text-sm font-bold tracking-wider">AIR QUALITY ALERT</span>
+        <span id="alert-mq135-val" class="font-mono text-sm"></span>
+        <span class="font-mono text-sm">— MQ135 exceeds safe threshold (150 ppm)</span>
+      </div>
+    </div>
 
-let tempChart = new Chart(document.getElementById("tempChart"), {
-  type: 'line',
-  data: { labels: [], datasets: [{ label: 'Temp °C', data: [] }] }
-});
+    <!-- ERROR BANNER -->
+    <div id="error-banner" class="error-banner hidden" role="alert">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      <span id="error-message" class="font-mono text-xs"></span>
+    </div>
 
-let humChart = new Chart(document.getElementById("humChart"), {
-  type: 'line',
-  data: { labels: [], datasets: [{ label: 'Humidity %', data: [] }] }
-});
+    <!-- ── METRIC CARDS ── -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-6">
 
-async function loadData() {
-  const res = await fetch(URL, {
-    headers: {
-      apikey: API_KEY
-    }
-  });
+      <!-- Gas Card -->
+      <div id="card-gas" class="metric-card" data-metric="gas">
+        <div class="card-corner card-corner-tl"></div>
+        <div class="card-corner card-corner-br"></div>
+        <div class="card-label font-mono text-xs tracking-widest">AIR QUALITY · MQ135</div>
+        <div class="card-icon-wrap">
+          <svg class="card-icon" viewBox="0 0 48 48" fill="none">
+            <path d="M24 6C15 6 8 13 8 22c0 6 3 11 8 14.5V40h16v-3.5C37 33 40 28 40 22c0-9-7-16-16-16z"
+              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="24" cy="22" r="5" fill="currentColor" opacity="0.3"/>
+            <path d="M18 10l-2-4M30 10l2-4M12 16l-4-2M36 16l4-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-value-wrap">
+          <span id="val-gas" class="card-value font-orbitron">—</span>
+          <span class="card-unit font-mono">ppm</span>
+        </div>
+        <div class="card-bar-track">
+          <div id="bar-gas" class="card-bar" style="width:0%"></div>
+        </div>
+        <div class="card-status font-mono text-xs" id="status-gas">LOADING…</div>
+        <div id="loading-gas" class="card-loader"></div>
+      </div>
 
-  const data = await res.json();
+      <!-- Temperature Card -->
+      <div id="card-temp" class="metric-card" data-metric="temp">
+        <div class="card-corner card-corner-tl"></div>
+        <div class="card-corner card-corner-br"></div>
+        <div class="card-label font-mono text-xs tracking-widest">TEMPERATURE · °C</div>
+        <div class="card-icon-wrap">
+          <svg class="card-icon" viewBox="0 0 48 48" fill="none">
+            <rect x="20" y="6" width="8" height="26" rx="4" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="24" cy="36" r="6" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="24" cy="36" r="3" fill="currentColor" opacity="0.4"/>
+            <line x1="28" y1="14" x2="32" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="28" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="28" y1="26" x2="32" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-value-wrap">
+          <span id="val-temp" class="card-value font-orbitron">—</span>
+          <span class="card-unit font-mono">°C</span>
+        </div>
+        <div class="card-bar-track">
+          <div id="bar-temp" class="card-bar bar-temp" style="width:0%"></div>
+        </div>
+        <div class="card-status font-mono text-xs" id="status-temp">LOADING…</div>
+        <div id="loading-temp" class="card-loader"></div>
+      </div>
 
-  if (!data.length) return;
+      <!-- Humidity Card -->
+      <div id="card-humid" class="metric-card" data-metric="humid">
+        <div class="card-corner card-corner-tl"></div>
+        <div class="card-corner card-corner-br"></div>
+        <div class="card-label font-mono text-xs tracking-widest">HUMIDITY · %RH</div>
+        <div class="card-icon-wrap">
+          <svg class="card-icon" viewBox="0 0 48 48" fill="none">
+            <path d="M24 8 C24 8 12 22 12 30 a12 12 0 0 0 24 0 C36 22 24 8 24 8z"
+              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M18 32 C18 34 20 36 24 36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="card-value-wrap">
+          <span id="val-humid" class="card-value font-orbitron">—</span>
+          <span class="card-unit font-mono">%</span>
+        </div>
+        <div class="card-bar-track">
+          <div id="bar-humid" class="card-bar bar-humid" style="width:0%"></div>
+        </div>
+        <div class="card-status font-mono text-xs" id="status-humid">LOADING…</div>
+        <div id="loading-humid" class="card-loader"></div>
+      </div>
 
-  data.reverse();
+    </section>
 
-  let labels = [];
-  let temps = [];
-  let hums = [];
+    <!-- ── CHARTS ── -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-  data.forEach(row => {
-    labels.push(new Date(row.created_at).toLocaleTimeString());
-    temps.push(row.temperature);
-    hums.push(row.humidity);
-  });
+      <!-- Temperature Chart -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <h2 class="font-orbitron text-sm font-semibold text-cyan-300 tracking-wider">TEMPERATURE TREND</h2>
+            <p class="text-xs text-cyan-700 font-mono mt-0.5">LAST 20 READINGS · °C</p>
+          </div>
+          <div class="chart-live-badge font-mono text-xs">● LIVE</div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-temp"></canvas>
+        </div>
+      </div>
 
-  let latest = data[data.length - 1];
+      <!-- Humidity Chart -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <h2 class="font-orbitron text-sm font-semibold text-cyan-300 tracking-wider">HUMIDITY TREND</h2>
+            <p class="text-xs text-cyan-700 font-mono mt-0.5">LAST 20 READINGS · %RH</p>
+          </div>
+          <div class="chart-live-badge font-mono text-xs">● LIVE</div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart-humid"></canvas>
+        </div>
+      </div>
 
-  document.getElementById("mq").innerText = latest.mq135;
-  document.getElementById("temp").innerText = latest.temperature + " °C";
-  document.getElementById("hum").innerText = latest.humidity + " %";
+    </section>
 
-  tempChart.data.labels = labels;
-  tempChart.data.datasets[0].data = temps;
-  tempChart.update();
+    <!-- ── MINI STATS ── -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="mini-stat">
+        <p class="mini-stat-label font-mono text-xs">MQ135 MIN</p>
+        <p id="stat-gas-min" class="mini-stat-val font-orbitron text-lg">—</p>
+      </div>
+      <div class="mini-stat">
+        <p class="mini-stat-label font-mono text-xs">MQ135 MAX</p>
+        <p id="stat-gas-max" class="mini-stat-val font-orbitron text-lg">—</p>
+      </div>
+      <div class="mini-stat">
+        <p class="mini-stat-label font-mono text-xs">TEMP AVG (20)</p>
+        <p id="stat-temp-avg" class="mini-stat-val font-orbitron text-lg">—</p>
+      </div>
+      <div class="mini-stat">
+        <p class="mini-stat-label font-mono text-xs">HUMID AVG (20)</p>
+        <p id="stat-humid-avg" class="mini-stat-val font-orbitron text-lg">—</p>
+      </div>
+    </section>
 
-  humChart.data.labels = labels;
-  humChart.data.datasets[0].data = hums;
-  humChart.update();
-}
+  </main>
 
-// refresh every 3 sec
-setInterval(loadData, 3000);
-loadData();
-</script>
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer class="relative z-10 border-t border-cyan-900/20 mt-12 py-5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p class="text-xs text-cyan-800 font-mono">ENVIROSENSE DASHBOARD · ESP8266 NODE</p>
+      <p class="text-xs text-cyan-800 font-mono" id="refresh-counter">NEXT REFRESH IN 3s</p>
+    </div>
+  </footer>
 
+  <script src="script.js"></script>
 </body>
 </html>
