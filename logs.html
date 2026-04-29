@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EnviroSense — Data Logs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="min-h-screen">
+
+  <div class="bg-grid"></div>
+  <div class="scan-line"></div>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <!-- HEADER -->
+  <header class="relative z-10 border-b border-cyan-900/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+
+      <div class="flex items-center gap-3">
+        <div class="logo-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <circle cx="18" cy="18" r="10" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>
+            <circle cx="18" cy="18" r="3" fill="#00d4ff"/>
+            <line x1="18" y1="1" x2="18" y2="8" stroke="#00d4ff" stroke-width="1.5"/>
+            <line x1="18" y1="28" x2="18" y2="35" stroke="#00d4ff" stroke-width="1.5"/>
+            <line x1="1" y1="18" x2="8" y2="18" stroke="#00d4ff" stroke-width="1.5"/>
+            <line x1="28" y1="18" x2="35" y2="18" stroke="#00d4ff" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-orbitron text-xl font-bold text-cyan-300 tracking-widest">ENVIROSENSE</h1>
+          <p class="text-xs text-cyan-700 tracking-widest font-mono">ESP8266 · ENVIRONMENTAL MONITOR</p>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-6">
+        <a href="index.html" class="nav-link font-mono text-sm">DASHBOARD</a>
+        <a href="logs.html" class="nav-link active font-mono text-sm">DATA LOGS</a>
+      </nav>
+
+      <div class="flex items-center gap-4">
+        <div id="device-status" class="status-pill status-checking">
+          <span class="status-dot"></span>
+          <span class="status-label font-mono text-xs">CHECKING…</span>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+    <!-- Page title row -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="font-orbitron text-2xl font-bold text-cyan-200 tracking-wider">DATA LOGS</h2>
+        <p class="text-cyan-700 font-mono text-sm mt-1">LAST 50 SENSOR READINGS · AUTO-REFRESH 10s</p>
+      </div>
+      <button id="refresh-btn" class="refresh-btn font-mono text-xs" onclick="loadLogs()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        REFRESH
+      </button>
+    </div>
+
+    <!-- Error banner -->
+    <div id="error-banner" class="error-banner hidden">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      <span id="error-message" class="font-mono text-xs"></span>
+    </div>
+
+    <!-- Table container -->
+    <div class="logs-table-wrap">
+
+      <!-- Loading overlay -->
+      <div id="table-loader" class="table-loader">
+        <div class="loader-spinner"></div>
+        <p class="font-mono text-cyan-500 text-sm mt-4">FETCHING RECORDS…</p>
+      </div>
+
+      <table class="logs-table w-full">
+        <thead>
+          <tr>
+            <th class="font-mono text-xs tracking-widest">#&nbsp;ID</th>
+            <th class="font-mono text-xs tracking-widest">MQ135 <span class="text-cyan-700">(ppm)</span></th>
+            <th class="font-mono text-xs tracking-widest">TEMPERATURE <span class="text-cyan-700">(°C)</span></th>
+            <th class="font-mono text-xs tracking-widest">HUMIDITY <span class="text-cyan-700">(%RH)</span></th>
+            <th class="font-mono text-xs tracking-widest">TIMESTAMP</th>
+          </tr>
+        </thead>
+        <tbody id="logs-tbody">
+          <!-- Rows injected by JS -->
+        </tbody>
+      </table>
+
+      <div id="empty-state" class="empty-state hidden">
+        <svg class="w-10 h-10 mx-auto mb-3 text-cyan-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M9 17v-2m3 2v-4m3 4v-6M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p class="font-mono text-cyan-700 text-sm">NO RECORDS FOUND</p>
+      </div>
+    </div>
+
+    <!-- Count row -->
+    <p id="record-count" class="text-xs text-cyan-800 font-mono text-right"></p>
+
+  </main>
+
+  <footer class="relative z-10 border-t border-cyan-900/20 mt-12 py-5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p class="text-xs text-cyan-800 font-mono">ENVIROSENSE DASHBOARD · ESP8266 NODE</p>
+      <p class="text-xs text-cyan-800 font-mono" id="logs-last-fetch">—</p>
+    </div>
+  </footer>
+
+  <script>
+    // ── CONFIG (inline so logs page works standalone) ──────────────────────
+    const SUPABASE_URL = 'https://eyfhlcmdhpewovrbixdh.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_JXV4aeRf6k51VyrfMPwNvA_SqibyY3n';
+    const OFFLINE_THRESHOLD_MS = 30_000;
+
+    const headers = {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json'
+    };
+
+    function formatTimestamp(ts) {
+      if (!ts) return '—';
+      const d = new Date(ts);
+      return d.toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+      });
+    }
+
+    function mq135Class(val) {
+      if (val > 200) return 'cell-danger';
+      if (val > 150) return 'cell-warn';
+      return 'cell-ok';
+    }
+
+    function setStatus(latest) {
+      const el = document.getElementById('device-status');
+      if (!latest) { el.className = 'status-pill status-offline'; el.querySelector('.status-label').textContent = 'OFFLINE'; return; }
+      const age = Date.now() - new Date(latest.created_at).getTime();
+      if (age > OFFLINE_THRESHOLD_MS) {
+        el.className = 'status-pill status-offline';
+        el.querySelector('.status-label').textContent = 'OFFLINE';
+      } else {
+        el.className = 'status-pill status-online';
+        el.querySelector('.status-label').textContent = 'ONLINE';
+      }
+    }
+
+    async function loadLogs() {
+      const loader = document.getElementById('table-loader');
+      const tbody = document.getElementById('logs-tbody');
+      const errorBanner = document.getElementById('error-banner');
+      const errorMsg = document.getElementById('error-message');
+      const countEl = document.getElementById('record-count');
+      const emptyState = document.getElementById('empty-state');
+      const fetchEl = document.getElementById('logs-last-fetch');
+
+      loader.style.display = 'flex';
+      errorBanner.classList.add('hidden');
+      tbody.innerHTML = '';
+      emptyState.classList.add('hidden');
+
+      try {
+        const url = `${SUPABASE_URL}/rest/v1/sensor_data?select=*&order=created_at.desc&limit=50`;
+        const res = await fetch(url, { headers });
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        const data = await res.json();
+
+        loader.style.display = 'none';
+        fetchEl.textContent = `FETCHED AT ${new Date().toLocaleTimeString('en-IN', { hour12: false })}`;
+        setStatus(data[0] || null);
+
+        if (!data.length) {
+          emptyState.classList.remove('hidden');
+          countEl.textContent = '';
+          return;
+        }
+
+        countEl.textContent = `SHOWING ${data.length} RECORDS`;
+
+        data.forEach((row, i) => {
+          const tr = document.createElement('tr');
+          tr.style.animationDelay = `${i * 18}ms`;
+          tr.className = 'log-row';
+          tr.innerHTML = `
+            <td class="font-mono text-cyan-600 text-sm">${row.id}</td>
+            <td class="font-mono text-sm"><span class="${mq135Class(row.mq135)}">${row.mq135 ?? '—'}</span></td>
+            <td class="font-mono text-amber-300 text-sm">${row.temperature != null ? Number(row.temperature).toFixed(1) : '—'}</td>
+            <td class="font-mono text-blue-300 text-sm">${row.humidity != null ? Number(row.humidity).toFixed(1) : '—'}</td>
+            <td class="font-mono text-cyan-700 text-xs">${formatTimestamp(row.created_at)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        loader.style.display = 'none';
+        errorBanner.classList.remove('hidden');
+        errorMsg.textContent = `FETCH ERROR: ${err.message}`;
+        console.error('[EnviroSense Logs]', err);
+      }
+    }
+
+    loadLogs();
+    setInterval(loadLogs, 10_000);
+  </script>
+
+</body>
+</html>
