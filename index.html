@@ -3,226 +3,685 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EnviroSense — Live Dashboard</title>
+  <title>EnviroSense — Industrial IoT Air Quality Monitor</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="min-h-screen">
+<body>
 
-  <!-- Ambient background layers -->
-  <div class="bg-grid"></div>
-  <div class="scan-line"></div>
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
+  <!-- ═══ PARTICLE CANVAS (hero bg) ═══ -->
+  <canvas id="particle-canvas"></canvas>
 
-  <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
-  <header class="relative z-10 border-b border-cyan-900/40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-
-      <div class="flex items-center gap-3">
-        <div class="logo-icon">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <circle cx="18" cy="18" r="17" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="4 2"/>
-            <circle cx="18" cy="18" r="10" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>
-            <circle cx="18" cy="18" r="3" fill="#00d4ff"/>
-            <line x1="18" y1="1" x2="18" y2="8" stroke="#00d4ff" stroke-width="1.5"/>
-            <line x1="18" y1="28" x2="18" y2="35" stroke="#00d4ff" stroke-width="1.5"/>
-            <line x1="1" y1="18" x2="8" y2="18" stroke="#00d4ff" stroke-width="1.5"/>
-            <line x1="28" y1="18" x2="35" y2="18" stroke="#00d4ff" stroke-width="1.5"/>
+  <!-- ═══ STICKY NAV ═══ -->
+  <nav id="main-nav" class="main-nav">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo" onclick="smoothTo('hero')">
+        <div class="nav-logo-icon">
+          <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" stroke="var(--neon)" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <circle cx="18" cy="18" r="10" stroke="var(--neon)" stroke-width="1" opacity="0.5"/>
+            <circle cx="18" cy="18" r="3" fill="var(--neon)"/>
+            <line x1="18" y1="1" x2="18" y2="8" stroke="var(--neon)" stroke-width="1.5"/>
+            <line x1="18" y1="28" x2="18" y2="35" stroke="var(--neon)" stroke-width="1.5"/>
+            <line x1="1" y1="18" x2="8" y2="18" stroke="var(--neon)" stroke-width="1.5"/>
+            <line x1="28" y1="18" x2="35" y2="18" stroke="var(--neon)" stroke-width="1.5"/>
           </svg>
         </div>
-        <div>
-          <h1 class="font-orbitron text-xl font-bold text-cyan-300 tracking-widest">ENVIROSENSE</h1>
-          <p class="text-xs text-cyan-700 tracking-widest font-mono">ESP8266 · ENVIRONMENTAL MONITOR</p>
-        </div>
+        <span class="nav-brand">ENVIROSENSE</span>
+      </a>
+      <div class="nav-links">
+        <a href="#hero"          class="nl" onclick="smoothTo('hero')">HOME</a>
+        <a href="#dashboard"     class="nl" onclick="smoothTo('dashboard')">DASHBOARD</a>
+        <a href="#analytics"     class="nl" onclick="smoothTo('analytics')">ANALYTICS</a>
+        <a href="#documentation" class="nl" onclick="smoothTo('documentation')">DOCS</a>
+        <a href="#team"          class="nl" onclick="smoothTo('team')">TEAM</a>
+        <a href="logs.html" class="nl nl-logs">DATA LOGS ↗</a>
       </div>
-
-      <!-- Nav links -->
-      <nav class="flex items-center gap-6">
-        <a href="index.html" class="nav-link active font-mono text-sm">DASHBOARD</a>
-        <a href="logs.html" class="nav-link font-mono text-sm">DATA LOGS</a>
-      </nav>
-
-      <!-- Status pill -->
-      <div class="flex items-center gap-4">
-        <div id="device-status" class="status-pill status-checking">
+      <div class="nav-status-wrap">
+        <div id="nav-device-status" class="status-pill status-checking">
           <span class="status-dot"></span>
-          <span class="status-label font-mono text-xs">CHECKING…</span>
+          <span class="status-label">CHECKING</span>
         </div>
-        <div class="text-right hidden sm:block">
-          <p class="text-xs text-cyan-700 font-mono">LAST UPDATE</p>
-          <p id="last-update-time" class="text-xs text-cyan-400 font-mono">—</p>
+      </div>
+      <button class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#hero"          onclick="smoothTo('hero');toggleMobileNav()">HOME</a>
+      <a href="#dashboard"     onclick="smoothTo('dashboard');toggleMobileNav()">DASHBOARD</a>
+      <a href="#analytics"     onclick="smoothTo('analytics');toggleMobileNav()">ANALYTICS</a>
+      <a href="#documentation" onclick="smoothTo('documentation');toggleMobileNav()">DOCS</a>
+      <a href="#team"          onclick="smoothTo('team');toggleMobileNav()">TEAM</a>
+      <a href="logs.html">DATA LOGS ↗</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 1 · HERO
+       ═══════════════════════════════════════════════ -->
+  <section id="hero" class="hero-section">
+
+    <!-- Decorative grid overlay -->
+    <div class="hero-grid-overlay"></div>
+
+    <!-- Glowing orbs -->
+    <div class="hero-orb orb-a"></div>
+    <div class="hero-orb orb-b"></div>
+    <div class="hero-orb orb-c"></div>
+
+    <div class="hero-content">
+
+      <!-- University badge -->
+      <div class="hero-badge" data-aos>
+        <span class="badge-dot"></span>
+        <span>Lovely Professional University · ECE-279 Project</span>
+      </div>
+
+      <!-- Main heading -->
+      <h1 class="hero-title" data-aos data-aos-delay="100">
+        <span class="hero-title-top">ENVIROSEN<span class="hero-title-accent">SE</span></span>
+        <span class="hero-title-sub">INDUSTRIAL AIR QUALITY MONITOR</span>
+      </h1>
+
+      <!-- Tagline -->
+      <p class="hero-tagline" data-aos data-aos-delay="200">
+        Real-time warehouse air quality intelligence powered by ESP8266,<br>
+        MQ135 gas sensors, DHT22, and cloud-synced dashboards.
+      </p>
+
+      <!-- Live stat pills -->
+      <div class="hero-stats" data-aos data-aos-delay="300">
+        <div class="hero-stat-pill">
+          <span class="hsp-icon">⬡</span>
+          <span id="hero-gas" class="hsp-val">—</span>
+          <span class="hsp-label">ppm MQ135</span>
         </div>
+        <div class="hero-stat-pill hsp-amber">
+          <span class="hsp-icon">◈</span>
+          <span id="hero-temp" class="hsp-val">—</span>
+          <span class="hsp-label">°C TEMP</span>
+        </div>
+        <div class="hero-stat-pill hsp-blue">
+          <span class="hsp-icon">◉</span>
+          <span id="hero-humid" class="hsp-val">—</span>
+          <span class="hsp-label">% RH</span>
+        </div>
+      </div>
+
+      <!-- CTA buttons -->
+      <div class="hero-ctas" data-aos data-aos-delay="400">
+        <button class="btn-primary" onclick="smoothTo('dashboard')">
+          VIEW LIVE DASHBOARD
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <button class="btn-ghost" onclick="smoothTo('documentation')">
+          READ DOCUMENTATION
+        </button>
       </div>
 
     </div>
-  </header>
 
-  <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
-  <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-
-    <!-- ALERT BANNER -->
-    <div id="alert-banner" class="alert-banner hidden" role="alert">
-      <div class="flex items-center gap-3">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-        </svg>
-        <span class="font-mono text-sm font-bold tracking-wider">AIR QUALITY ALERT</span>
-        <span id="alert-mq135-val" class="font-mono text-sm"></span>
-        <span class="font-mono text-sm">— MQ135 exceeds safe threshold (150 ppm)</span>
-      </div>
-    </div>
-
-    <!-- ERROR BANNER -->
-    <div id="error-banner" class="error-banner hidden" role="alert">
-      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-      <span id="error-message" class="font-mono text-xs"></span>
-    </div>
-
-    <!-- ── METRIC CARDS ── -->
-    <section class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-
-      <!-- Gas Card -->
-      <div id="card-gas" class="metric-card" data-metric="gas">
-        <div class="card-corner card-corner-tl"></div>
-        <div class="card-corner card-corner-br"></div>
-        <div class="card-label font-mono text-xs tracking-widest">AIR QUALITY · MQ135</div>
-        <div class="card-icon-wrap">
-          <svg class="card-icon" viewBox="0 0 48 48" fill="none">
-            <path d="M24 6C15 6 8 13 8 22c0 6 3 11 8 14.5V40h16v-3.5C37 33 40 28 40 22c0-9-7-16-16-16z"
-              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-            <circle cx="24" cy="22" r="5" fill="currentColor" opacity="0.3"/>
-            <path d="M18 10l-2-4M30 10l2-4M12 16l-4-2M36 16l4-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="card-value-wrap">
-          <span id="val-gas" class="card-value font-orbitron">—</span>
-          <span class="card-unit font-mono">ppm</span>
-        </div>
-        <div class="card-bar-track">
-          <div id="bar-gas" class="card-bar" style="width:0%"></div>
-        </div>
-        <div class="card-status font-mono text-xs" id="status-gas">LOADING…</div>
-        <div id="loading-gas" class="card-loader"></div>
-      </div>
-
-      <!-- Temperature Card -->
-      <div id="card-temp" class="metric-card" data-metric="temp">
-        <div class="card-corner card-corner-tl"></div>
-        <div class="card-corner card-corner-br"></div>
-        <div class="card-label font-mono text-xs tracking-widest">TEMPERATURE · °C</div>
-        <div class="card-icon-wrap">
-          <svg class="card-icon" viewBox="0 0 48 48" fill="none">
-            <rect x="20" y="6" width="8" height="26" rx="4" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="24" cy="36" r="6" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="24" cy="36" r="3" fill="currentColor" opacity="0.4"/>
-            <line x1="28" y1="14" x2="32" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="28" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="28" y1="26" x2="32" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="card-value-wrap">
-          <span id="val-temp" class="card-value font-orbitron">—</span>
-          <span class="card-unit font-mono">°C</span>
-        </div>
-        <div class="card-bar-track">
-          <div id="bar-temp" class="card-bar bar-temp" style="width:0%"></div>
-        </div>
-        <div class="card-status font-mono text-xs" id="status-temp">LOADING…</div>
-        <div id="loading-temp" class="card-loader"></div>
-      </div>
-
-      <!-- Humidity Card -->
-      <div id="card-humid" class="metric-card" data-metric="humid">
-        <div class="card-corner card-corner-tl"></div>
-        <div class="card-corner card-corner-br"></div>
-        <div class="card-label font-mono text-xs tracking-widest">HUMIDITY · %RH</div>
-        <div class="card-icon-wrap">
-          <svg class="card-icon" viewBox="0 0 48 48" fill="none">
-            <path d="M24 8 C24 8 12 22 12 30 a12 12 0 0 0 24 0 C36 22 24 8 24 8z"
-              stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M18 32 C18 34 20 36 24 36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-          </svg>
-        </div>
-        <div class="card-value-wrap">
-          <span id="val-humid" class="card-value font-orbitron">—</span>
-          <span class="card-unit font-mono">%</span>
-        </div>
-        <div class="card-bar-track">
-          <div id="bar-humid" class="card-bar bar-humid" style="width:0%"></div>
-        </div>
-        <div class="card-status font-mono text-xs" id="status-humid">LOADING…</div>
-        <div id="loading-humid" class="card-loader"></div>
-      </div>
-
-    </section>
-
-    <!-- ── CHARTS ── -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-      <!-- Temperature Chart -->
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div>
-            <h2 class="font-orbitron text-sm font-semibold text-cyan-300 tracking-wider">TEMPERATURE TREND</h2>
-            <p class="text-xs text-cyan-700 font-mono mt-0.5">LAST 20 READINGS · °C</p>
+    <!-- Team profile cards (hero bottom) -->
+    <div class="hero-team-strip" data-aos data-aos-delay="500">
+      <div class="hts-label">PROJECT TEAM</div>
+      <div class="hts-cards">
+        <div class="hts-card">
+          <div class="hts-avatar">
+            <div class="hts-avatar-inner">RK</div>
           </div>
-          <div class="chart-live-badge font-mono text-xs">● LIVE</div>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="chart-temp"></canvas>
-        </div>
-      </div>
-
-      <!-- Humidity Chart -->
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div>
-            <h2 class="font-orbitron text-sm font-semibold text-cyan-300 tracking-wider">HUMIDITY TREND</h2>
-            <p class="text-xs text-cyan-700 font-mono mt-0.5">LAST 20 READINGS · %RH</p>
+          <div class="hts-info">
+            <span class="hts-name">Rishabh Kumar</span>
+            <span class="hts-id">12505709</span>
           </div>
-          <div class="chart-live-badge font-mono text-xs">● LIVE</div>
         </div>
-        <div class="chart-wrap">
-          <canvas id="chart-humid"></canvas>
+        <div class="hts-card">
+          <div class="hts-avatar">
+            <div class="hts-avatar-inner" style="background:var(--amber-dim);color:var(--amber)">HR</div>
+          </div>
+          <div class="hts-info">
+            <span class="hts-name">Himanshu Raj</span>
+            <span class="hts-id">12508956</span>
+          </div>
+        </div>
+        <div class="hts-card">
+          <div class="hts-avatar">
+            <div class="hts-avatar-inner" style="background:var(--blue-dim);color:var(--blue)">NY</div>
+          </div>
+          <div class="hts-info">
+            <span class="hts-name">Nitin Yadav</span>
+            <span class="hts-id">12508958</span>
+          </div>
+        </div>
+        <div class="hts-card">
+          <div class="hts-avatar">
+            <div class="hts-avatar-inner" style="background:rgba(0,255,163,0.12);color:var(--green)">PM</div>
+          </div>
+          <div class="hts-info">
+            <span class="hts-name">Piyush Mishra</span>
+            <span class="hts-id">12517184</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero-scroll-hint">
+      <div class="scroll-arrow"></div>
+      <span>SCROLL TO EXPLORE</span>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 2 · LIVE DASHBOARD
+       ═══════════════════════════════════════════════ -->
+  <section id="dashboard" class="page-section">
+    <div class="section-container">
+
+      <!-- Section header -->
+      <div class="section-header" data-aos>
+        <div class="section-tag">LIVE · AUTO-REFRESH 3s</div>
+        <h2 class="section-title">SENSOR DASHBOARD</h2>
+        <p class="section-sub">Real-time readings from your ESP8266 node · <span id="last-update-time" class="text-neon">—</span></p>
+      </div>
+
+      <!-- Alert Banner -->
+      <div id="alert-banner" class="alert-banner hidden" role="alert">
+        <div class="alert-icon">⚠</div>
+        <div class="alert-body">
+          <strong>AIR QUALITY ALERT</strong>
+          <span id="alert-mq135-val"></span>
+          — MQ135 exceeds safe threshold (150 ppm). Immediate action recommended.
+        </div>
+        <button class="alert-close" onclick="document.getElementById('alert-banner').classList.add('hidden')">✕</button>
+      </div>
+
+      <!-- Error Banner -->
+      <div id="error-banner" class="error-banner hidden" role="alert">
+        <span class="error-icon">✕</span>
+        <span id="error-message"></span>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="cards-grid" data-aos>
+        <!-- Gas -->
+        <div id="card-gas" class="metric-card mc-gas">
+          <div class="mc-corner mc-tl"></div>
+          <div class="mc-corner mc-br"></div>
+          <div class="mc-bg-icon">
+            <svg viewBox="0 0 48 48" fill="none">
+              <path d="M24 6C15 6 8 13 8 22c0 6 3 11 8 14.5V40h16v-3.5C37 33 40 28 40 22c0-9-7-16-16-16z" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="24" cy="22" r="5" fill="currentColor" opacity="0.3"/>
+              <path d="M18 10l-2-4M30 10l2-4M12 16l-4-2M36 16l4-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="mc-label">AIR QUALITY · MQ135</div>
+          <div class="mc-value-row">
+            <span id="val-gas" class="mc-value">—</span>
+            <span class="mc-unit">ppm</span>
+          </div>
+          <div class="mc-bar-track"><div id="bar-gas" class="mc-bar" style="width:0%"></div></div>
+          <div class="mc-footer">
+            <span id="status-gas" class="mc-status">LOADING…</span>
+            <div id="loading-gas" class="mc-shimmer"></div>
+          </div>
+        </div>
+
+        <!-- Temperature -->
+        <div id="card-temp" class="metric-card mc-temp">
+          <div class="mc-corner mc-tl"></div>
+          <div class="mc-corner mc-br"></div>
+          <div class="mc-bg-icon">
+            <svg viewBox="0 0 48 48" fill="none">
+              <rect x="20" y="6" width="8" height="26" rx="4" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="24" cy="36" r="6" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="24" cy="36" r="3" fill="currentColor" opacity="0.4"/>
+              <line x1="28" y1="14" x2="32" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="28" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="28" y1="26" x2="32" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="mc-label">TEMPERATURE · °C</div>
+          <div class="mc-value-row">
+            <span id="val-temp" class="mc-value">—</span>
+            <span class="mc-unit">°C</span>
+          </div>
+          <div class="mc-bar-track"><div id="bar-temp" class="mc-bar bar-amber" style="width:0%"></div></div>
+          <div class="mc-footer">
+            <span id="status-temp" class="mc-status">LOADING…</span>
+            <div id="loading-temp" class="mc-shimmer"></div>
+          </div>
+        </div>
+
+        <!-- Humidity -->
+        <div id="card-humid" class="metric-card mc-humid">
+          <div class="mc-corner mc-tl"></div>
+          <div class="mc-corner mc-br"></div>
+          <div class="mc-bg-icon">
+            <svg viewBox="0 0 48 48" fill="none">
+              <path d="M24 8 C24 8 12 22 12 30 a12 12 0 0 0 24 0 C36 22 24 8 24 8z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M18 32 C18 34 20 36 24 36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="mc-label">HUMIDITY · %RH</div>
+          <div class="mc-value-row">
+            <span id="val-humid" class="mc-value">—</span>
+            <span class="mc-unit">%</span>
+          </div>
+          <div class="mc-bar-track"><div id="bar-humid" class="mc-bar bar-blue" style="width:0%"></div></div>
+          <div class="mc-footer">
+            <span id="status-humid" class="mc-status">LOADING…</span>
+            <div id="loading-humid" class="mc-shimmer"></div>
+          </div>
         </div>
       </div>
 
-    </section>
+      <!-- Mini Stats -->
+      <div class="mini-stats-row" data-aos>
+        <div class="mini-stat">
+          <p class="ms-label">MQ135 MIN</p>
+          <p id="stat-gas-min" class="ms-val">—</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-label">MQ135 MAX</p>
+          <p id="stat-gas-max" class="ms-val">—</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-label">TEMP AVG (20)</p>
+          <p id="stat-temp-avg" class="ms-val ms-amber">—</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-label">HUMID AVG (20)</p>
+          <p id="stat-humid-avg" class="ms-val ms-blue">—</p>
+        </div>
+        <div class="mini-stat">
+          <p class="ms-label">NEXT REFRESH</p>
+          <p id="refresh-counter" class="ms-val ms-green">3s</p>
+        </div>
+      </div>
 
-    <!-- ── MINI STATS ── -->
-    <section class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <div class="mini-stat">
-        <p class="mini-stat-label font-mono text-xs">MQ135 MIN</p>
-        <p id="stat-gas-min" class="mini-stat-val font-orbitron text-lg">—</p>
-      </div>
-      <div class="mini-stat">
-        <p class="mini-stat-label font-mono text-xs">MQ135 MAX</p>
-        <p id="stat-gas-max" class="mini-stat-val font-orbitron text-lg">—</p>
-      </div>
-      <div class="mini-stat">
-        <p class="mini-stat-label font-mono text-xs">TEMP AVG (20)</p>
-        <p id="stat-temp-avg" class="mini-stat-val font-orbitron text-lg">—</p>
-      </div>
-      <div class="mini-stat">
-        <p class="mini-stat-label font-mono text-xs">HUMID AVG (20)</p>
-        <p id="stat-humid-avg" class="mini-stat-val font-orbitron text-lg">—</p>
-      </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
+  <!-- ═══════════════════════════════════════════════
+       SECTION 3 · ANALYTICS
+       ═══════════════════════════════════════════════ -->
+  <section id="analytics" class="page-section section-alt">
+    <div class="section-container">
 
-  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
-  <footer class="relative z-10 border-t border-cyan-900/20 mt-12 py-5">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <p class="text-xs text-cyan-800 font-mono">ENVIROSENSE DASHBOARD · ESP8266 NODE</p>
-      <p class="text-xs text-cyan-800 font-mono" id="refresh-counter">NEXT REFRESH IN 3s</p>
+      <div class="section-header" data-aos>
+        <div class="section-tag">VISUALIZATION</div>
+        <h2 class="section-title">ANALYTICS</h2>
+        <p class="section-sub">Trend charts from the last 20 readings — updates live every 3 seconds</p>
+      </div>
+
+      <!-- Chart view toggle -->
+      <div class="chart-toggle-row" data-aos>
+        <button class="chart-toggle-btn active" id="btn-live" onclick="setChartMode('live')">● LIVE</button>
+        <button class="chart-toggle-btn" id="btn-hist" onclick="setChartMode('hist')">HISTORICAL (50)</button>
+      </div>
+
+      <!-- Charts Grid (3 charts) -->
+      <div class="charts-grid" data-aos>
+
+        <!-- Gas Chart -->
+        <div class="chart-card chart-card-full">
+          <div class="cc-header">
+            <div>
+              <h3 class="cc-title">GAS CONCENTRATION TREND</h3>
+              <p class="cc-sub" id="chart-gas-mode">LAST 20 READINGS · MQ135 PPM</p>
+            </div>
+            <div class="cc-badge">● LIVE</div>
+          </div>
+          <div class="cc-wrap"><canvas id="chart-gas"></canvas></div>
+        </div>
+
+        <!-- Temp Chart -->
+        <div class="chart-card">
+          <div class="cc-header">
+            <div>
+              <h3 class="cc-title">TEMPERATURE TREND</h3>
+              <p class="cc-sub">°C</p>
+            </div>
+            <div class="cc-badge cc-amber">● LIVE</div>
+          </div>
+          <div class="cc-wrap"><canvas id="chart-temp"></canvas></div>
+        </div>
+
+        <!-- Humidity Chart -->
+        <div class="chart-card">
+          <div class="cc-header">
+            <div>
+              <h3 class="cc-title">HUMIDITY TREND</h3>
+              <p class="cc-sub">%RH</p>
+            </div>
+            <div class="cc-badge cc-blue">● LIVE</div>
+          </div>
+          <div class="cc-wrap"><canvas id="chart-humid"></canvas></div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 4 · DOCUMENTATION
+       ═══════════════════════════════════════════════ -->
+  <section id="documentation" class="page-section">
+    <div class="section-container">
+
+      <div class="section-header" data-aos>
+        <div class="section-tag">PROJECT DOCS</div>
+        <h2 class="section-title">DOCUMENTATION HUB</h2>
+        <p class="section-sub">Technical overview, architecture, and research for EnviroSense</p>
+      </div>
+
+      <div class="docs-layout" data-aos>
+
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+          <nav class="docs-nav">
+            <button class="dn-item active" onclick="showDoc('overview')">PROJECT OVERVIEW</button>
+            <button class="dn-item" onclick="showDoc('hardware')">HARDWARE SPECS</button>
+            <button class="dn-item" onclick="showDoc('software')">SOFTWARE STACK</button>
+            <button class="dn-item" onclick="showDoc('use-cases')">USE CASES</button>
+            <button class="dn-item" onclick="showDoc('alerts')">ALERT LOGIC</button>
+            <button class="dn-item" onclick="showDoc('future')">FUTURE SCOPE</button>
+          </nav>
+          <!-- PDF viewer trigger -->
+          <div class="docs-pdf-box">
+            <div class="dpb-icon">PDF</div>
+            <div class="dpb-text">
+              <strong>Full Project Report</strong>
+              <span>View embedded PDF below</span>
+            </div>
+            <button class="dpb-btn" onclick="togglePdf()">OPEN</button>
+          </div>
+        </aside>
+
+        <!-- Doc content -->
+        <main class="docs-content">
+
+          <!-- OVERVIEW -->
+          <article id="doc-overview" class="doc-article active-doc">
+            <div class="da-tag">OVERVIEW</div>
+            <h3 class="da-title">EnviroSense — Industrial Air Quality Monitor</h3>
+            <p class="da-lead">EnviroSense is a low-cost, high-reliability IoT system designed to continuously monitor air quality parameters in warehouses, manufacturing facilities, and industrial environments where hazardous gases, temperature extremes, or high humidity can pose safety risks.</p>
+            <div class="da-divider"></div>
+            <h4 class="da-h4">PROBLEM STATEMENT</h4>
+            <p>Industrial air quality degradation is responsible for a significant share of occupational health issues globally. Manual inspection is infrequent, costly, and slow to react to sudden changes in gas concentration. EnviroSense replaces periodic inspections with continuous, cloud-connected sensing.</p>
+            <h4 class="da-h4">PROJECT GOALS</h4>
+            <ul class="da-list">
+              <li>Monitor MQ135 gas concentrations, temperature, and humidity in real-time</li>
+              <li>Transmit sensor readings to a Supabase PostgreSQL cloud backend</li>
+              <li>Provide a live web dashboard with visual alerts when thresholds are exceeded</li>
+              <li>Enable historical data analysis via logged records</li>
+              <li>Operate on low power — suitable for battery-backed deployment</li>
+            </ul>
+          </article>
+
+          <!-- HARDWARE -->
+          <article id="doc-hardware" class="doc-article">
+            <div class="da-tag">HARDWARE</div>
+            <h3 class="da-title">Hardware Architecture</h3>
+            <p class="da-lead">The sensor node is built around the ESP8266 WiFi microcontroller, paired with industry-standard environmental sensors.</p>
+            <div class="da-divider"></div>
+            <div class="specs-table">
+              <div class="st-row st-head">
+                <span>COMPONENT</span><span>MODEL</span><span>SPECIFICATION</span>
+              </div>
+              <div class="st-row"><span>Microcontroller</span><span>ESP8266 (NodeMCU)</span><span>80/160 MHz, 80 KB RAM, WiFi 802.11 b/g/n</span></div>
+              <div class="st-row"><span>Gas Sensor</span><span>MQ135</span><span>10–300 ppm, detects NH3, NOx, CO2, smoke</span></div>
+              <div class="st-row"><span>Temp/Humid</span><span>DHT22</span><span>−40 to 80°C ±0.5°C, 0–100% RH ±2%</span></div>
+              <div class="st-row"><span>Power</span><span>5V USB / 3.7V LiPo</span><span>~80 mA active, deep-sleep capable</span></div>
+              <div class="st-row"><span>Cloud</span><span>Supabase (PostgreSQL)</span><span>REST API, realtime, free tier</span></div>
+            </div>
+          </article>
+
+          <!-- SOFTWARE -->
+          <article id="doc-software" class="doc-article">
+            <div class="da-tag">SOFTWARE</div>
+            <h3 class="da-title">Software Stack</h3>
+            <p class="da-lead">EnviroSense uses a lean, dependency-light stack to maximize performance and simplicity.</p>
+            <div class="da-divider"></div>
+            <h4 class="da-h4">FIRMWARE (ESP8266)</h4>
+            <div class="code-block"><pre>// Core libraries
+#include &lt;ESP8266WiFi.h&gt;
+#include &lt;ESP8266HTTPClient.h&gt;
+#include &lt;DHT.h&gt;
+
+// Read sensors → format JSON → POST to Supabase
+void loop() {
+  float temp  = dht.readTemperature();
+  float humid = dht.readHumidity();
+  int   gas   = analogRead(A0);
+  postToSupabase(gas, temp, humid);
+  delay(3000);
+}</pre></div>
+            <h4 class="da-h4">DASHBOARD</h4>
+            <ul class="da-list">
+              <li><strong>HTML5 / CSS3</strong> — Semantic markup, CSS custom properties</li>
+              <li><strong>Tailwind CSS</strong> — Utility-first responsive styling</li>
+              <li><strong>Chart.js 4</strong> — Live-updating line charts</li>
+              <li><strong>Supabase REST</strong> — Direct API calls, no SDK needed</li>
+              <li><strong>Vanilla JS</strong> — No framework overhead, fast load</li>
+            </ul>
+          </article>
+
+          <!-- USE CASES -->
+          <article id="doc-use-cases" class="doc-article">
+            <div class="da-tag">USE CASES</div>
+            <h3 class="da-title">Deployment Scenarios</h3>
+            <p class="da-lead">EnviroSense is purpose-built for environments where air quality directly impacts worker safety and product integrity.</p>
+            <div class="da-divider"></div>
+            <div class="use-case-grid">
+              <div class="uc-card">
+                <div class="uc-icon">🏭</div>
+                <h5>Chemical Warehouses</h5>
+                <p>Detect volatile organic compounds and toxic gas leaks before they reach dangerous concentrations.</p>
+              </div>
+              <div class="uc-card">
+                <div class="uc-icon">❄️</div>
+                <h5>Cold Storage Facilities</h5>
+                <p>Monitor temperature and humidity deviations that could spoil perishable goods.</p>
+              </div>
+              <div class="uc-card">
+                <div class="uc-icon">🔋</div>
+                <h5>Battery Storage Rooms</h5>
+                <p>Detect hydrogen gas off-gassing from lead-acid or lithium battery banks.</p>
+              </div>
+              <div class="uc-card">
+                <div class="uc-icon">🏢</div>
+                <h5>Office Buildings</h5>
+                <p>CO2 and VOC monitoring for HVAC optimization and occupant wellbeing.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- ALERTS -->
+          <article id="doc-alerts" class="doc-article">
+            <div class="da-tag">ALERT LOGIC</div>
+            <h3 class="da-title">Threshold & Alert System</h3>
+            <p class="da-lead">The dashboard applies a three-tier color-coded alert system based on sensor readings.</p>
+            <div class="da-divider"></div>
+            <div class="threshold-table">
+              <div class="tt-row tt-head"><span>SENSOR</span><span>SAFE ✓</span><span>WARNING ⚠</span><span>DANGER ✕</span></div>
+              <div class="tt-row"><span>MQ135 (ppm)</span><span class="tc-green">&lt; 100</span><span class="tc-amber">100–150</span><span class="tc-red">&gt; 150</span></div>
+              <div class="tt-row"><span>Temperature (°C)</span><span class="tc-green">15–28</span><span class="tc-amber">28–40</span><span class="tc-red">&gt; 40</span></div>
+              <div class="tt-row"><span>Humidity (%RH)</span><span class="tc-green">30–60</span><span class="tc-amber">60–80</span><span class="tc-red">&gt; 80</span></div>
+            </div>
+            <p style="margin-top:1.5rem">When MQ135 exceeds 150 ppm, the dashboard activates a full-screen alert banner with a red pulsing glow effect on the gas card. Future versions will support email/SMS alerts via webhooks.</p>
+          </article>
+
+          <!-- FUTURE -->
+          <article id="doc-future" class="doc-article">
+            <div class="da-tag">ROADMAP</div>
+            <h3 class="da-title">Future Scope</h3>
+            <p class="da-lead">EnviroSense is designed for extensibility. Planned enhancements include:</p>
+            <div class="da-divider"></div>
+            <ul class="da-list">
+              <li><strong>Multi-node support</strong> — Deploy multiple sensors across a facility with a unified map view</li>
+              <li><strong>Push notifications</strong> — Integrate Twilio/SendGrid for real-time SMS and email alerts</li>
+              <li><strong>ML anomaly detection</strong> — Detect irregular patterns before they become emergencies</li>
+              <li><strong>Mobile app</strong> — React Native companion app with push alerts</li>
+              <li><strong>OLED local display</strong> — Show current readings on a display attached to the sensor node</li>
+              <li><strong>LoRaWAN support</strong> — Enable deployment in areas without WiFi coverage</li>
+            </ul>
+          </article>
+
+        </main>
+      </div>
+
+      <!-- PDF Viewer Panel -->
+      <div id="pdf-panel" class="pdf-panel hidden" data-aos>
+        <div class="pdf-panel-header">
+          <h3 class="pdf-panel-title">PROJECT REPORT · PDF VIEWER</h3>
+          <div class="pdf-controls">
+            <button class="pdf-ctrl-btn" onclick="zoomPdf(-0.2)">−</button>
+            <span id="pdf-zoom-val" class="pdf-zoom-label">100%</span>
+            <button class="pdf-ctrl-btn" onclick="zoomPdf(0.2)">+</button>
+            <button class="pdf-ctrl-btn pdf-close-btn" onclick="togglePdf()">CLOSE ✕</button>
+          </div>
+        </div>
+        <div class="pdf-embed-wrap" id="pdf-embed-wrap">
+          <div class="pdf-placeholder">
+            <div class="pdf-ph-icon">PDF</div>
+            <p>Upload your project PDF and update the <code>src</code> attribute in the embed tag below.</p>
+            <p class="pdf-ph-sub">To embed: replace <code>YOUR_PDF_URL</code> in the HTML with your PDF file URL or base64 data URI.</p>
+            <div class="pdf-file-drop" id="pdf-drop" ondragover="event.preventDefault()" ondrop="handlePdfDrop(event)">
+              DRAG & DROP PDF HERE<br>or
+              <label class="pdf-upload-label">
+                BROWSE FILE
+                <input type="file" accept=".pdf" onchange="handlePdfFile(event)" style="display:none">
+              </label>
+            </div>
+          </div>
+          <iframe id="pdf-iframe" class="pdf-iframe hidden" src="" title="Project Report PDF"></iframe>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 5 · TEAM
+       ═══════════════════════════════════════════════ -->
+  <section id="team" class="page-section section-alt">
+    <div class="section-container">
+
+      <div class="section-header" data-aos>
+        <div class="section-tag">THE PEOPLE</div>
+        <h2 class="section-title">OUR TEAM</h2>
+        <p class="section-sub">Computer Science Engineering students at Lovely Professional University, Punjab</p>
+      </div>
+
+      <div class="team-grid" data-aos>
+
+        <div class="team-card">
+          <div class="tc-glow tc-glow-cyan"></div>
+          <div class="tc-avatar" style="--av-color:var(--neon);--av-bg:var(--neon-dim)">
+            <span>RK</span>
+          </div>
+          <div class="tc-body">
+            <h4 class="tc-name">Rishabh Kumar</h4>
+            <div class="tc-reg">REG: 12505709</div>
+            <div class="tc-role">Hardware Lead & IoT Developer</div>
+            <p class="tc-bio">Designed and assembled the ESP8266 sensor node. Wrote the embedded firmware for sensor reading, WiFi connectivity, and Supabase data transmission.</p>
+            <div class="tc-tags">
+              <span>ESP8266</span><span>C++</span><span>IoT</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card">
+          <div class="tc-glow tc-glow-amber"></div>
+          <div class="tc-avatar" style="--av-color:var(--amber);--av-bg:var(--amber-dim)">
+            <span>HR</span>
+          </div>
+          <div class="tc-body">
+            <h4 class="tc-name">Himanshu Raj</h4>
+            <div class="tc-reg">REG: 12508956</div>
+            <div class="tc-role">Frontend Developer & UI/UX</div>
+            <p class="tc-bio">Built the real-time dashboard UI with advanced CSS animations, Chart.js visualizations, and responsive design. Focused on making data immediately comprehensible.</p>
+            <div class="tc-tags">
+              <span>HTML/CSS</span><span>JavaScript</span><span>Chart.js</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card">
+          <div class="tc-glow tc-glow-blue"></div>
+          <div class="tc-avatar" style="--av-color:var(--blue);--av-bg:var(--blue-dim)">
+            <span>NY</span>
+          </div>
+          <div class="tc-body">
+            <h4 class="tc-name">Nitin Yadav</h4>
+            <div class="tc-reg">REG: 12508958</div>
+            <div class="tc-role">Backend & Cloud Integration</div>
+            <p class="tc-bio">Configured the Supabase PostgreSQL backend, set up REST API endpoints, Row Level Security policies, and managed the cloud data pipeline.</p>
+            <div class="tc-tags">
+              <span>Supabase</span><span>SQL</span><span>REST API</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-card">
+          <div class="tc-glow tc-glow-green"></div>
+          <div class="tc-avatar" style="--av-color:var(--green);--av-bg:rgba(0,255,163,0.12)">
+            <span>PM</span>
+          </div>
+          <div class="tc-body">
+            <h4 class="tc-name">Piyush Mishra</h4>
+            <div class="tc-reg">REG: 12517184</div>
+            <div class="tc-role">Research & Documentation</div>
+            <p class="tc-bio">Led project documentation, use-case research, hardware calibration testing, and prepared the technical report and presentation materials.</p>
+            <div class="tc-tags">
+              <span>Research</span><span>Calibration</span><span>Docs</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- University logo strip -->
+      <div class="uni-strip" data-aos>
+        <div class="us-logo-wrap">
+          <!-- LPU Logo SVG representation -->
+          <svg width="60" height="60" viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="40" r="38" stroke="var(--amber)" stroke-width="2"/>
+            <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="var(--amber)" font-size="22" font-weight="bold" font-family="Bebas Neue,sans-serif">LPU</text>
+          </svg>
+        </div>
+        <div class="us-text">
+          <span class="us-name">LOVELY PROFESSIONAL UNIVERSITY</span>
+          <span class="us-dept">School of Computer Science Engineering · Punjab (India)</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo">ENVIROSENSE</span>
+        <span class="footer-sub">ESP8266 · IoT · ENVIRONMENTAL MONITOR</span>
+      </div>
+      <div class="footer-links">
+        <a onclick="smoothTo('dashboard')">DASHBOARD</a>
+        <a onclick="smoothTo('analytics')">ANALYTICS</a>
+        <a href="logs.html">LOGS</a>
+        <a onclick="smoothTo('team')">TEAM</a>
+      </div>
+      <div class="footer-copy">
+        LPU IoT PROJECT 2024–25 · BUILT WITH ESP8266 + SUPABASE
+      </div>
     </div>
   </footer>
 
