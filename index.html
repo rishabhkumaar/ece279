@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,9 +8,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
   <!-- ═══ PARTICLE CANVAS (hero bg) ═══ -->
@@ -21,23 +25,23 @@
       <a href="#hero" class="nav-logo" onclick="smoothTo('hero')">
         <div class="nav-logo-icon">
           <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
-            <circle cx="18" cy="18" r="17" stroke="var(--neon)" stroke-width="1.5" stroke-dasharray="4 2"/>
-            <circle cx="18" cy="18" r="10" stroke="var(--neon)" stroke-width="1" opacity="0.5"/>
-            <circle cx="18" cy="18" r="3" fill="var(--neon)"/>
-            <line x1="18" y1="1" x2="18" y2="8" stroke="var(--neon)" stroke-width="1.5"/>
-            <line x1="18" y1="28" x2="18" y2="35" stroke="var(--neon)" stroke-width="1.5"/>
-            <line x1="1" y1="18" x2="8" y2="18" stroke="var(--neon)" stroke-width="1.5"/>
-            <line x1="28" y1="18" x2="35" y2="18" stroke="var(--neon)" stroke-width="1.5"/>
+            <circle cx="18" cy="18" r="17" stroke="var(--neon)" stroke-width="1.5" stroke-dasharray="4 2" />
+            <circle cx="18" cy="18" r="10" stroke="var(--neon)" stroke-width="1" opacity="0.5" />
+            <circle cx="18" cy="18" r="3" fill="var(--neon)" />
+            <line x1="18" y1="1" x2="18" y2="8" stroke="var(--neon)" stroke-width="1.5" />
+            <line x1="18" y1="28" x2="18" y2="35" stroke="var(--neon)" stroke-width="1.5" />
+            <line x1="1" y1="18" x2="8" y2="18" stroke="var(--neon)" stroke-width="1.5" />
+            <line x1="28" y1="18" x2="35" y2="18" stroke="var(--neon)" stroke-width="1.5" />
           </svg>
         </div>
         <span class="nav-brand">ENVIROSENSE</span>
       </a>
       <div class="nav-links">
-        <a href="#hero"          class="nl" onclick="smoothTo('hero')">HOME</a>
-        <a href="#dashboard"     class="nl" onclick="smoothTo('dashboard')">DASHBOARD</a>
-        <a href="#analytics"     class="nl" onclick="smoothTo('analytics')">ANALYTICS</a>
+        <a href="#hero" class="nl" onclick="smoothTo('hero')">HOME</a>
+        <a href="#dashboard" class="nl" onclick="smoothTo('dashboard')">DASHBOARD</a>
+        <a href="#analytics" class="nl" onclick="smoothTo('analytics')">ANALYTICS</a>
         <a href="#documentation" class="nl" onclick="smoothTo('documentation')">DOCS</a>
-        <a href="#team"          class="nl" onclick="smoothTo('team')">TEAM</a>
+        <a href="#team" class="nl" onclick="smoothTo('team')">TEAM</a>
         <a href="logs.html" class="nl nl-logs">DATA LOGS ↗</a>
       </div>
       <div class="nav-status-wrap">
@@ -51,11 +55,11 @@
       </button>
     </div>
     <div class="mobile-menu" id="mobile-menu">
-      <a href="#hero"          onclick="smoothTo('hero');toggleMobileNav()">HOME</a>
-      <a href="#dashboard"     onclick="smoothTo('dashboard');toggleMobileNav()">DASHBOARD</a>
-      <a href="#analytics"     onclick="smoothTo('analytics');toggleMobileNav()">ANALYTICS</a>
+      <a href="#hero" onclick="smoothTo('hero');toggleMobileNav()">HOME</a>
+      <a href="#dashboard" onclick="smoothTo('dashboard');toggleMobileNav()">DASHBOARD</a>
+      <a href="#analytics" onclick="smoothTo('analytics');toggleMobileNav()">ANALYTICS</a>
       <a href="#documentation" onclick="smoothTo('documentation');toggleMobileNav()">DOCS</a>
-      <a href="#team"          onclick="smoothTo('team');toggleMobileNav()">TEAM</a>
+      <a href="#team" onclick="smoothTo('team');toggleMobileNav()">TEAM</a>
       <a href="logs.html">DATA LOGS ↗</a>
     </div>
   </nav>
@@ -116,7 +120,9 @@
       <div class="hero-ctas" data-aos data-aos-delay="400">
         <button class="btn-primary" onclick="smoothTo('dashboard')">
           VIEW LIVE DASHBOARD
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </button>
         <button class="btn-ghost" onclick="smoothTo('documentation')">
           READ DOCUMENTATION
@@ -186,7 +192,8 @@
       <div class="section-header" data-aos>
         <div class="section-tag">LIVE · AUTO-REFRESH 3s</div>
         <h2 class="section-title">SENSOR DASHBOARD</h2>
-        <p class="section-sub">Real-time readings from your ESP8266 node · <span id="last-update-time" class="text-neon">—</span></p>
+        <p class="section-sub">Real-time readings from your ESP8266 node · <span id="last-update-time"
+            class="text-neon">—</span></p>
       </div>
 
       <!-- Alert Banner -->
@@ -214,9 +221,11 @@
           <div class="mc-corner mc-br"></div>
           <div class="mc-bg-icon">
             <svg viewBox="0 0 48 48" fill="none">
-              <path d="M24 6C15 6 8 13 8 22c0 6 3 11 8 14.5V40h16v-3.5C37 33 40 28 40 22c0-9-7-16-16-16z" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="24" cy="22" r="5" fill="currentColor" opacity="0.3"/>
-              <path d="M18 10l-2-4M30 10l2-4M12 16l-4-2M36 16l4-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M24 6C15 6 8 13 8 22c0 6 3 11 8 14.5V40h16v-3.5C37 33 40 28 40 22c0-9-7-16-16-16z"
+                stroke="currentColor" stroke-width="1.5" />
+              <circle cx="24" cy="22" r="5" fill="currentColor" opacity="0.3" />
+              <path d="M18 10l-2-4M30 10l2-4M12 16l-4-2M36 16l4-2" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" />
             </svg>
           </div>
           <div class="mc-label">AIR QUALITY · MQ135</div>
@@ -224,7 +233,9 @@
             <span id="val-gas" class="mc-value">—</span>
             <span class="mc-unit">ppm</span>
           </div>
-          <div class="mc-bar-track"><div id="bar-gas" class="mc-bar" style="width:0%"></div></div>
+          <div class="mc-bar-track">
+            <div id="bar-gas" class="mc-bar" style="width:0%"></div>
+          </div>
           <div class="mc-footer">
             <span id="status-gas" class="mc-status">LOADING…</span>
             <div id="loading-gas" class="mc-shimmer"></div>
@@ -237,12 +248,12 @@
           <div class="mc-corner mc-br"></div>
           <div class="mc-bg-icon">
             <svg viewBox="0 0 48 48" fill="none">
-              <rect x="20" y="6" width="8" height="26" rx="4" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="24" cy="36" r="6" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="24" cy="36" r="3" fill="currentColor" opacity="0.4"/>
-              <line x1="28" y1="14" x2="32" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="28" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <line x1="28" y1="26" x2="32" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <rect x="20" y="6" width="8" height="26" rx="4" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="24" cy="36" r="6" stroke="currentColor" stroke-width="1.5" />
+              <circle cx="24" cy="36" r="3" fill="currentColor" opacity="0.4" />
+              <line x1="28" y1="14" x2="32" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="28" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <line x1="28" y1="26" x2="32" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
           </div>
           <div class="mc-label">TEMPERATURE · °C</div>
@@ -250,7 +261,9 @@
             <span id="val-temp" class="mc-value">—</span>
             <span class="mc-unit">°C</span>
           </div>
-          <div class="mc-bar-track"><div id="bar-temp" class="mc-bar bar-amber" style="width:0%"></div></div>
+          <div class="mc-bar-track">
+            <div id="bar-temp" class="mc-bar bar-amber" style="width:0%"></div>
+          </div>
           <div class="mc-footer">
             <span id="status-temp" class="mc-status">LOADING…</span>
             <div id="loading-temp" class="mc-shimmer"></div>
@@ -263,8 +276,10 @@
           <div class="mc-corner mc-br"></div>
           <div class="mc-bg-icon">
             <svg viewBox="0 0 48 48" fill="none">
-              <path d="M24 8 C24 8 12 22 12 30 a12 12 0 0 0 24 0 C36 22 24 8 24 8z" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M18 32 C18 34 20 36 24 36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+              <path d="M24 8 C24 8 12 22 12 30 a12 12 0 0 0 24 0 C36 22 24 8 24 8z" stroke="currentColor"
+                stroke-width="1.5" />
+              <path d="M18 32 C18 34 20 36 24 36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                opacity="0.5" />
             </svg>
           </div>
           <div class="mc-label">HUMIDITY · %RH</div>
@@ -272,7 +287,9 @@
             <span id="val-humid" class="mc-value">—</span>
             <span class="mc-unit">%</span>
           </div>
-          <div class="mc-bar-track"><div id="bar-humid" class="mc-bar bar-blue" style="width:0%"></div></div>
+          <div class="mc-bar-track">
+            <div id="bar-humid" class="mc-bar bar-blue" style="width:0%"></div>
+          </div>
           <div class="mc-footer">
             <span id="status-humid" class="mc-status">LOADING…</span>
             <div id="loading-humid" class="mc-shimmer"></div>
@@ -411,10 +428,14 @@
           <article id="doc-overview" class="doc-article active-doc">
             <div class="da-tag">OVERVIEW</div>
             <h3 class="da-title">EnviroSense — Industrial Air Quality Monitor</h3>
-            <p class="da-lead">EnviroSense is a low-cost, high-reliability IoT system designed to continuously monitor air quality parameters in warehouses, manufacturing facilities, and industrial environments where hazardous gases, temperature extremes, or high humidity can pose safety risks.</p>
+            <p class="da-lead">EnviroSense is a low-cost, high-reliability IoT system designed to continuously monitor
+              air quality parameters in warehouses, manufacturing facilities, and industrial environments where
+              hazardous gases, temperature extremes, or high humidity can pose safety risks.</p>
             <div class="da-divider"></div>
             <h4 class="da-h4">PROBLEM STATEMENT</h4>
-            <p>Industrial air quality degradation is responsible for a significant share of occupational health issues globally. Manual inspection is infrequent, costly, and slow to react to sudden changes in gas concentration. EnviroSense replaces periodic inspections with continuous, cloud-connected sensing.</p>
+            <p>Industrial air quality degradation is responsible for a significant share of occupational health issues
+              globally. Manual inspection is infrequent, costly, and slow to react to sudden changes in gas
+              concentration. EnviroSense replaces periodic inspections with continuous, cloud-connected sensing.</p>
             <h4 class="da-h4">PROJECT GOALS</h4>
             <ul class="da-list">
               <li>Monitor MQ135 gas concentrations, temperature, and humidity in real-time</li>
@@ -429,17 +450,23 @@
           <article id="doc-hardware" class="doc-article">
             <div class="da-tag">HARDWARE</div>
             <h3 class="da-title">Hardware Architecture</h3>
-            <p class="da-lead">The sensor node is built around the ESP8266 WiFi microcontroller, paired with industry-standard environmental sensors.</p>
+            <p class="da-lead">The sensor node is built around the ESP8266 WiFi microcontroller, paired with
+              industry-standard environmental sensors.</p>
             <div class="da-divider"></div>
             <div class="specs-table">
               <div class="st-row st-head">
                 <span>COMPONENT</span><span>MODEL</span><span>SPECIFICATION</span>
               </div>
-              <div class="st-row"><span>Microcontroller</span><span>ESP8266 (NodeMCU)</span><span>80/160 MHz, 80 KB RAM, WiFi 802.11 b/g/n</span></div>
-              <div class="st-row"><span>Gas Sensor</span><span>MQ135</span><span>10–300 ppm, detects NH3, NOx, CO2, smoke</span></div>
-              <div class="st-row"><span>Temp/Humid</span><span>DHT22</span><span>−40 to 80°C ±0.5°C, 0–100% RH ±2%</span></div>
-              <div class="st-row"><span>Power</span><span>5V USB / 3.7V LiPo</span><span>~80 mA active, deep-sleep capable</span></div>
-              <div class="st-row"><span>Cloud</span><span>Supabase (PostgreSQL)</span><span>REST API, realtime, free tier</span></div>
+              <div class="st-row"><span>Microcontroller</span><span>ESP8266 (NodeMCU)</span><span>80/160 MHz, 80 KB RAM,
+                  WiFi 802.11 b/g/n</span></div>
+              <div class="st-row"><span>Gas Sensor</span><span>MQ135</span><span>10–300 ppm, detects NH3, NOx, CO2,
+                  smoke</span></div>
+              <div class="st-row"><span>Temp/Humid</span><span>DHT22</span><span>−40 to 80°C ±0.5°C, 0–100% RH
+                  ±2%</span></div>
+              <div class="st-row"><span>Power</span><span>5V USB / 3.7V LiPo</span><span>~80 mA active, deep-sleep
+                  capable</span></div>
+              <div class="st-row"><span>Cloud</span><span>Supabase (PostgreSQL)</span><span>REST API, realtime, free
+                  tier</span></div>
             </div>
           </article>
 
@@ -447,10 +474,12 @@
           <article id="doc-software" class="doc-article">
             <div class="da-tag">SOFTWARE</div>
             <h3 class="da-title">Software Stack</h3>
-            <p class="da-lead">EnviroSense uses a lean, dependency-light stack to maximize performance and simplicity.</p>
+            <p class="da-lead">EnviroSense uses a lean, dependency-light stack to maximize performance and simplicity.
+            </p>
             <div class="da-divider"></div>
             <h4 class="da-h4">FIRMWARE (ESP8266)</h4>
-            <div class="code-block"><pre>// Core libraries
+            <div class="code-block">
+              <pre>// Core libraries
 #include &lt;ESP8266WiFi.h&gt;
 #include &lt;ESP8266HTTPClient.h&gt;
 #include &lt;DHT.h&gt;
@@ -462,7 +491,8 @@ void loop() {
   int   gas   = analogRead(A0);
   postToSupabase(gas, temp, humid);
   delay(3000);
-}</pre></div>
+}</pre>
+            </div>
             <h4 class="da-h4">DASHBOARD</h4>
             <ul class="da-list">
               <li><strong>HTML5 / CSS3</strong> — Semantic markup, CSS custom properties</li>
@@ -477,7 +507,8 @@ void loop() {
           <article id="doc-use-cases" class="doc-article">
             <div class="da-tag">USE CASES</div>
             <h3 class="da-title">Deployment Scenarios</h3>
-            <p class="da-lead">EnviroSense is purpose-built for environments where air quality directly impacts worker safety and product integrity.</p>
+            <p class="da-lead">EnviroSense is purpose-built for environments where air quality directly impacts worker
+              safety and product integrity.</p>
             <div class="da-divider"></div>
             <div class="use-case-grid">
               <div class="uc-card">
@@ -510,12 +541,18 @@ void loop() {
             <p class="da-lead">The dashboard applies a three-tier color-coded alert system based on sensor readings.</p>
             <div class="da-divider"></div>
             <div class="threshold-table">
-              <div class="tt-row tt-head"><span>SENSOR</span><span>SAFE ✓</span><span>WARNING ⚠</span><span>DANGER ✕</span></div>
-              <div class="tt-row"><span>MQ135 (ppm)</span><span class="tc-green">&lt; 100</span><span class="tc-amber">100–150</span><span class="tc-red">&gt; 150</span></div>
-              <div class="tt-row"><span>Temperature (°C)</span><span class="tc-green">15–28</span><span class="tc-amber">28–40</span><span class="tc-red">&gt; 40</span></div>
-              <div class="tt-row"><span>Humidity (%RH)</span><span class="tc-green">30–60</span><span class="tc-amber">60–80</span><span class="tc-red">&gt; 80</span></div>
+              <div class="tt-row tt-head"><span>SENSOR</span><span>SAFE ✓</span><span>WARNING ⚠</span><span>DANGER
+                  ✕</span></div>
+              <div class="tt-row"><span>MQ135 (ppm)</span><span class="tc-green">&lt; 100</span><span
+                  class="tc-amber">100–150</span><span class="tc-red">&gt; 150</span></div>
+              <div class="tt-row"><span>Temperature (°C)</span><span class="tc-green">15–28</span><span
+                  class="tc-amber">28–40</span><span class="tc-red">&gt; 40</span></div>
+              <div class="tt-row"><span>Humidity (%RH)</span><span class="tc-green">30–60</span><span
+                  class="tc-amber">60–80</span><span class="tc-red">&gt; 80</span></div>
             </div>
-            <p style="margin-top:1.5rem">When MQ135 exceeds 150 ppm, the dashboard activates a full-screen alert banner with a red pulsing glow effect on the gas card. Future versions will support email/SMS alerts via webhooks.</p>
+            <p style="margin-top:1.5rem">When MQ135 exceeds 150 ppm, the dashboard activates a full-screen alert banner
+              with a red pulsing glow effect on the gas card. Future versions will support email/SMS alerts via
+              webhooks.</p>
           </article>
 
           <!-- FUTURE -->
@@ -525,11 +562,14 @@ void loop() {
             <p class="da-lead">EnviroSense is designed for extensibility. Planned enhancements include:</p>
             <div class="da-divider"></div>
             <ul class="da-list">
-              <li><strong>Multi-node support</strong> — Deploy multiple sensors across a facility with a unified map view</li>
-              <li><strong>Push notifications</strong> — Integrate Twilio/SendGrid for real-time SMS and email alerts</li>
+              <li><strong>Multi-node support</strong> — Deploy multiple sensors across a facility with a unified map
+                view</li>
+              <li><strong>Push notifications</strong> — Integrate Twilio/SendGrid for real-time SMS and email alerts
+              </li>
               <li><strong>ML anomaly detection</strong> — Detect irregular patterns before they become emergencies</li>
               <li><strong>Mobile app</strong> — React Native companion app with push alerts</li>
-              <li><strong>OLED local display</strong> — Show current readings on a display attached to the sensor node</li>
+              <li><strong>OLED local display</strong> — Show current readings on a display attached to the sensor node
+              </li>
               <li><strong>LoRaWAN support</strong> — Enable deployment in areas without WiFi coverage</li>
             </ul>
           </article>
@@ -538,7 +578,7 @@ void loop() {
       </div>
 
       <!-- PDF Viewer Panel -->
-      <div id="pdf-panel" class="pdf-panel hidden" data-aos>
+      <div id="pdf-panel" class="pdf-panel" data-aos>
         <div class="pdf-panel-header">
           <h3 class="pdf-panel-title">PROJECT REPORT · PDF VIEWER</h3>
           <div class="pdf-controls">
@@ -549,19 +589,22 @@ void loop() {
           </div>
         </div>
         <div class="pdf-embed-wrap" id="pdf-embed-wrap">
-          <div class="pdf-placeholder">
+          <!-- <div class="pdf-placeholder">
             <div class="pdf-ph-icon">PDF</div>
             <p>Upload your project PDF and update the <code>src</code> attribute in the embed tag below.</p>
-            <p class="pdf-ph-sub">To embed: replace <code>YOUR_PDF_URL</code> in the HTML with your PDF file URL or base64 data URI.</p>
+            <p class="pdf-ph-sub">To embed: replace <code>YOUR_PDF_URL</code> in the HTML with your PDF file URL or
+              base64 data URI.</p>
             <div class="pdf-file-drop" id="pdf-drop" ondragover="event.preventDefault()" ondrop="handlePdfDrop(event)">
               DRAG & DROP PDF HERE<br>or
               <label class="pdf-upload-label">
                 BROWSE FILE
                 <input type="file" accept=".pdf" onchange="handlePdfFile(event)" style="display:none">
               </label>
-            </div>
+            </div>  -->
           </div>
-          <iframe id="pdf-iframe" class="pdf-iframe hidden" src="" title="Project Report PDF"></iframe>
+          <iframe id="pdf-iframe" class="pdf-iframe" src="ECE279.pdf" title="Project Report PDF">
+          </iframe>
+          <!-- <iframe id="pdf-iframe" class="pdf-iframe hidden" src="" title="Project Report PDF"></iframe> -->
         </div>
       </div>
 
@@ -591,7 +634,8 @@ void loop() {
             <h4 class="tc-name">Rishabh Kumar</h4>
             <div class="tc-reg">REG: 12505709</div>
             <div class="tc-role">Hardware Lead & IoT Developer</div>
-            <p class="tc-bio">Designed and assembled the ESP8266 sensor node. Wrote the embedded firmware for sensor reading, WiFi connectivity, and Supabase data transmission.</p>
+            <p class="tc-bio">Designed and assembled the ESP8266 sensor node. Wrote the embedded firmware for sensor
+              reading, WiFi connectivity, and Supabase data transmission.</p>
             <div class="tc-tags">
               <span>ESP8266</span><span>C++</span><span>IoT</span>
             </div>
@@ -607,7 +651,8 @@ void loop() {
             <h4 class="tc-name">Himanshu Raj</h4>
             <div class="tc-reg">REG: 12508956</div>
             <div class="tc-role">Frontend Developer & UI/UX</div>
-            <p class="tc-bio">Built the real-time dashboard UI with advanced CSS animations, Chart.js visualizations, and responsive design. Focused on making data immediately comprehensible.</p>
+            <p class="tc-bio">Built the real-time dashboard UI with advanced CSS animations, Chart.js visualizations,
+              and responsive design. Focused on making data immediately comprehensible.</p>
             <div class="tc-tags">
               <span>HTML/CSS</span><span>JavaScript</span><span>Chart.js</span>
             </div>
@@ -623,7 +668,8 @@ void loop() {
             <h4 class="tc-name">Nitin Yadav</h4>
             <div class="tc-reg">REG: 12508958</div>
             <div class="tc-role">Backend & Cloud Integration</div>
-            <p class="tc-bio">Configured the Supabase PostgreSQL backend, set up REST API endpoints, Row Level Security policies, and managed the cloud data pipeline.</p>
+            <p class="tc-bio">Configured the Supabase PostgreSQL backend, set up REST API endpoints, Row Level Security
+              policies, and managed the cloud data pipeline.</p>
             <div class="tc-tags">
               <span>Supabase</span><span>SQL</span><span>REST API</span>
             </div>
@@ -639,7 +685,8 @@ void loop() {
             <h4 class="tc-name">Piyush Mishra</h4>
             <div class="tc-reg">REG: 12517184</div>
             <div class="tc-role">Research & Documentation</div>
-            <p class="tc-bio">Led project documentation, use-case research, hardware calibration testing, and prepared the technical report and presentation materials.</p>
+            <p class="tc-bio">Led project documentation, use-case research, hardware calibration testing, and prepared
+              the technical report and presentation materials.</p>
             <div class="tc-tags">
               <span>Research</span><span>Calibration</span><span>Docs</span>
             </div>
@@ -653,8 +700,9 @@ void loop() {
         <div class="us-logo-wrap">
           <!-- LPU Logo SVG representation -->
           <svg width="60" height="60" viewBox="0 0 80 80" fill="none">
-            <circle cx="40" cy="40" r="38" stroke="var(--amber)" stroke-width="2"/>
-            <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="var(--amber)" font-size="22" font-weight="bold" font-family="Bebas Neue,sans-serif">LPU</text>
+            <circle cx="40" cy="40" r="38" stroke="var(--amber)" stroke-width="2" />
+            <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="var(--amber)" font-size="22"
+              font-weight="bold" font-family="Bebas Neue,sans-serif">LPU</text>
           </svg>
         </div>
         <div class="us-text">
@@ -687,4 +735,5 @@ void loop() {
 
   <script src="script.js"></script>
 </body>
+
 </html>
