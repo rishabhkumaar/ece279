@@ -52,7 +52,8 @@ canvas {
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0;
+  opacity: 1;
+  /* position: relative; prevent weird overlay issues */
 }
 
 /* ── DESIGN TOKENS ────────────────────────────────────── */
